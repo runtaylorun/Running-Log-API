@@ -1,11 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 
 const database = require('./DB/database');
 
 const main = async () => {
 	const app = express();
 
-	//Database
+	// Configuration
+	app.use(cors());
+
+	// Databases
 	await database.connectToDatabase();
 
 	// Routes
