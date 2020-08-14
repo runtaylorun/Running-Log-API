@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const passport = require('passport')
 const database = require('./DB/database');
 
 const main = async () => {
@@ -13,6 +13,13 @@ const main = async () => {
 	};
 	app.use(cors(corsOptions));
 	app.use(bodyParser.json());
+	app.use(express.cookieParser())
+	app.use(express.session({secret: 'bigbrain@1738475039484789982'}))
+	app.use(passport.initialize())
+	app.use(passport.session())
+
+	//auth
+	require('./Config/passport')(passport)
 
 	// Databases
 	await database.connectToDatabase();
