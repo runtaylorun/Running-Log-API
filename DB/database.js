@@ -5,7 +5,8 @@ let connection;
 const connectToDatabase = async () => {
 	try {
 		const init = await mysql.createConnection({
-			name: 'localhost',
+			host: '192.168.1.7',
+			port: 3306,
 			user: 'Taylor',
 			password: 'Warsawcc@12',
 			database: 'sys',

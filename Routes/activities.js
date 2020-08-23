@@ -52,8 +52,7 @@ module.exports = (app) => {
   app.get('/activity/:userId/:activityId', async (req, res) => {
     const { activityId } = req.params;
 
-    const query = `SELECT * FROM Activities INNER JOIN activityTypes ON Activities.type = activityTypes.activityCode
-    WHERE activityId = ${activityId}`;
+    const query = `SELECT Activities.*, activityTypes.activityCode FROM Activities INNER JOIN activityTypes ON Activities.type = activityTypes.activityCode WHERE activityId = ${activityId}`;
 
     try {
       await connection.query(query, (error, results, fields) => {
@@ -76,7 +75,7 @@ module.exports = (app) => {
     const { activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, activityId } = req.body.activity;
 
     const query = `UPDATE Activities
-                    SET distance = ${distance}, date = ${date}, elapsedTime = ${elapsedTime}, comments = ${comments}, difficultyRating = ${difficultyRating}, activityType = ${type}, activityTitle = ${activityTitle}, distanceUnit = ${distanceUnit}
+                    SET distance = ${distance}, date = '${date}', elapsedTime = '${elapsedTime}', comments = '${comments}', difficultyRating = ${difficultyRating}, type = ${type}, activityTitle = '${activityTitle}', distanceUnit = '${distanceUnit}'
                     WHERE activityId = ${activityId}`;
 
     await connection.query(query, (error, results, fields) => {
