@@ -18,7 +18,44 @@
         "default-case-last": 1,
         "eqeqeq": 1,
         "no-multi-spaces": 1,
-        "camelcase": "warn",
-        "comma-dangle": 1,
+        "camelcase": [
+            "error",
+            "always"
+        ],
+        "comma-dangle": [
+            "error",
+            "always"
+        ],
+        "semi": 1,
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "no-console": "warn",
+        "no-var": "error",
+        "prefer-const": "error",
+        "no-const-assign": "error",
+        "spaced-comment": "error",
+        "space-in-parens": "error",
+        "space-before-blocks": "error",
+        "sort-vars": "error",
+        "sort-keys": "error",
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "key-spacing": "error",
+        "array-bracket-spacing": [
+            "error",
+            "always"
+        ],
+        "block-spacing": [
+            "error",
+            "always"
+        ],
+        "brace-style": [
+            "error",
+            "1tbs"
+        ]
     }
 }

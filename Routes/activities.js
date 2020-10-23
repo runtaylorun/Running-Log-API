@@ -1,90 +1,62 @@
-const database = require('../DB/database');
-const moment = require('moment');
+const database = require('../DB/database')
+const { getUserActivities, getUserActivityById, createNewActivity, updateActivity } = require('../Services/activities')
 
-const connection = database.getConnection();
+const connection = database.getConnection()
 
 module.exports = (app) => {
   app.post('/activity', async (req, res) => {
-    const { activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, userId } = req.body.activity;
-    const query = ` INSERT INTO activities 
-    (activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, userId) 
-    VALUES ('${activityTitle}', '${type}', '${distanceUnit}', '${distance}', '${date}', '${elapsedTime}', '${comments}', '${difficultyRating}', '${userId}')`;
+    const { activity } = req.body
 
     try {
-      await connection.query(query, (error, results, fields) => {
-        if (error) throw error;
-
-        res.status(201).send('ok');
-      });
+      await createNewActivity(activity)
+      res.status(201).send('Activity created')
     } catch (error) {
-      console.log('Error inserting into database');
+      console.log('Error creating new activity')
     }
-  });
+  })
 
   app.get('/activity/:userId', async (req, res) => {
-    const { userId } = req.params;
-
-    const query = `SELECT Activities.activityId, Activities.userId, Activities.distance, Activities.date, Activities.elapsedTime, Activities.comments, Activities.difficultyRating,
-    Activities.activityTitle, Activities.type, Activities.distanceUnit, activityTypes.type
-    FROM Activities 
-		INNER JOIN activityTypes ON Activities.type = activityTypes.activityCode
-		WHERE userId = ${userId} AND MONTH(date) = ${req.query.month} AND YEAR(date) 
-			= ${req.query.year} `;
+    const { userId } = req.params
+    const query = {
+      month: req.query.month || null,
+      year: req.query.year || null,
+      startDate: req.query.startDate || null,
+      endDate: req.query.endDate || null
+    }
 
     try {
-      await connection.query(query, (error, results, fields) => {
-        if (error) throw error;
-
-        const formattedResults = results.map(activity => {
-          return {
-            ...activity,
-            date: moment(activity.date).format('YYYY-MM-DD')
-          };
-        });
-
-        res.status(200).send(formattedResults);
-      });
+      await getUserActivities(userId, query, (activities) => {
+        console.log(activities)
+        res.status(200).send(activities)
+      })
     } catch (error) {
-      console.log('Error getting user activities', error);
+      res.status(400).send('Error getting activities')
     }
-  });
+  })
 
   app.get('/activity/:userId/:activityId', async (req, res) => {
-    const { activityId } = req.params;
-
-    const query = `SELECT Activities.*, activityTypes.activityCode FROM Activities INNER JOIN activityTypes ON Activities.type = activityTypes.activityCode WHERE activityId = ${activityId}`;
+    const { userId, activityId } = req.params
 
     try {
-      await connection.query(query, (error, results, fields) => {
-        if (error) throw error;
-
-        const formattedResults = results.map(activity => {
-          return {
-            ...activity,
-            date: moment(activity.date).format('YYYY-MM-DD')
-          };
-        });
-        res.status(200).send(formattedResults);
-      });
+      await getUserActivityById(userId, activityId, (activities) => {
+        res.status(200).send(activities)
+      })
     } catch (error) {
-      console.log('error fetching single activity', error);
+      res.status(400).send('Error getting activities')
     }
-  });
+  })
 
   app.put('/activity/:id', async (req, res) => {
-    const { activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, activityId } = req.body.activity;
+    const { activity } = req.body
 
-    const query = `UPDATE Activities
-                    SET distance = ${distance}, date = '${date}', elapsedTime = '${elapsedTime}', comments = '${comments}', difficultyRating = ${difficultyRating}, type = ${type}, activityTitle = '${activityTitle}', distanceUnit = '${distanceUnit}'
-                    WHERE activityId = ${activityId}`;
+    try {
+      await updateActivity(activity)
+      res.status(201).send('Activity updated')
+    } catch (error) {
+      console.log('error updating activity', error)
+    }
 
-    await connection.query(query, (error, results, fields) => {
-      if (error) throw error;
+  })
 
-      res.status(200).send(results);
-    });
-
-  });
-
-  app.delete('/activity/:id', async (req, res) => { });
-};
+  app.delete('/activity/:id', async (req, res) => { })
+}
