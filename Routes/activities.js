@@ -26,7 +26,6 @@ module.exports = (app) => {
 
     try {
       await getUserActivities(userId, query, (activities) => {
-        console.log(activities)
         res.status(200).send(activities)
       })
     } catch (error) {
