@@ -1,0 +1,7 @@
+{
+    "DBHost": "runninglog.cgaqszkioruv.us-east-2.rds.amazonaws.com",
+    "DBPort": 3306,
+    "DBUser": "runtaylorun",
+    "DBPassword": "Ahdcbi637bjklo9n754rg8",
+    "DBName": "RunningLog"
+}
