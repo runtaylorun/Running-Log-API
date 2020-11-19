@@ -3,10 +3,10 @@ const moment = require('moment')
 
 
 const getUserActivities = async (userId, urlQuery, callback) => {
-    let sqlQuery = `SELECT Activities.activityId, Activities.userId, Activities.distance, Activities.date, Activities.elapsedTime, Activities.comments, Activities.difficultyRating,
-                   Activities.activityTitle, Activities.type, Activities.distanceUnit, activityTypes.type
+    let sqlQuery = `SELECT Activities.id, Activities.userId, Activities.distance, Activities.date, Activities.elapsedTime, Activities.comments, Activities.difficultyRating,
+                   Activities.title, Activities.type, Activities.distanceUnit, activityTypes.type
                    FROM Activities 
-		           INNER JOIN activityTypes ON Activities.type = activityTypes.activityCode
+		           INNER JOIN activityTypes ON Activities.type = activityTypes.id
                    WHERE userId = ${userId}`
 
     sqlQuery += queryBuilder(urlQuery)
@@ -30,10 +30,10 @@ const getUserActivities = async (userId, urlQuery, callback) => {
 }
 
 const getUserActivityById = async (userId, activityId, callback) => {
-    const sqlQuery = `SELECT Activities.*, activityTypes.activityCode 
+    const sqlQuery = `SELECT Activities.*, activityTypes.id 
                       FROM Activities 
-                      INNER JOIN activityTypes ON Activities.type = activityTypes.activityCode 
-                      WHERE activityId = ${activityId}
+                      INNER JOIN activityTypes ON Activities.type = activityTypes.id 
+                      WHERE Activities.id = ${activityId}
                       AND userId = ${userId}`
     try {
         await executeQuery(sqlQuery, (activities) => {
@@ -54,11 +54,11 @@ const getUserActivityById = async (userId, activityId, callback) => {
 }
 
 const createNewActivity = async (activity) => {
-    const { activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, userId } = activity
+    const { title, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, userId } = activity
 
-    const sqlQuery = ` INSERT INTO activities 
-    (activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, userId) 
-    VALUES ('${activityTitle}', '${type}', '${distanceUnit}', '${distance}', '${date}', '${elapsedTime}', '${comments}', '${difficultyRating}', '${userId}')`
+    const sqlQuery = ` INSERT INTO Activities 
+    (title, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, userId) 
+    VALUES ('${title}', '${type}', '${distanceUnit}', '${distance}', '${date}', '${elapsedTime}', '${comments}', '${difficultyRating}', '${userId}')`
 
     try {
         await executeQuery(sqlQuery, (results) => console.log(results))
@@ -69,11 +69,11 @@ const createNewActivity = async (activity) => {
 }
 
 const updateActivity = async (activity) => {
-    const { activityTitle, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, activityId } = activity
+    const { title, type, distanceUnit, distance, date, elapsedTime, comments, difficultyRating, activityId } = activity
 
     const sqlQuery = `UPDATE Activities
-                    SET distance = ${distance}, date = '${date}', elapsedTime = '${elapsedTime}', comments = '${comments}', difficultyRating = ${difficultyRating}, type = ${type}, activityTitle = '${activityTitle}', distanceUnit = '${distanceUnit}'
-                    WHERE activityId = ${activityId}`
+                    SET distance = ${distance}, date = '${date}', elapsedTime = '${elapsedTime}', comments = '${comments}', difficultyRating = ${difficultyRating}, type = ${type}, title = '${title}', distanceUnit = '${distanceUnit}'
+                    WHERE id = ${activityId}`
 
     try {
         await executeQuery(sqlQuery, (results) => console.log(results))
