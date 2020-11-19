@@ -5,7 +5,10 @@ const executeQuery = async (sqlQuery, callback) => {
     try {
         await connection.query(sqlQuery, (error, results) => {
             if (error) throw error
-            callback(results)
+
+            if (callback) {
+                callback(results)
+            }
         })
     } catch (error) {
         console.log('Error executing query', error)
@@ -34,12 +37,3 @@ module.exports = {
     executeQuery,
     queryBuilder
 }
-
-
-
-/* const formattedResults = results.map(activity => (
-    {
-        ...activity,
-        date: moment(activity.date).format('YYYY-MM-DD')
-    }
-)) */
