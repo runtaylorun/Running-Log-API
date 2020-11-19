@@ -31,9 +31,8 @@ const main = async () => {
   require('./Routes/auth.js')(app);
   require('./Routes/gear.js')(app);
 
-  const port = process.env.PORT || 5000;
 
-  app.listen(port, () => {
+  app.listen(process.env.PORT || 5000, () => {
     console.log(`Server running on port ${port}`);
   });
 };
