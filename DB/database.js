@@ -11,6 +11,9 @@ const connectToDatabase = async () => {
 			user: config.DBUser,
 			password: config.DBPassword,
 			database: config.DBName,
+			ssl: {
+				ca: fs.readFileSync(__dirname + '/Certs/rds-ca-2019-root.pem')
+			},
 			insecureAuth: true,
 		});
 		connection = init;
