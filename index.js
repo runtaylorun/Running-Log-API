@@ -5,6 +5,7 @@ const passport = require('passport');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const database = require('./DB/database');
+const config = require('./config.json')
 
 const main = async () => {
   const app = express();
@@ -32,7 +33,10 @@ const main = async () => {
   require('./Routes/gear.js')(app);
 
 
-  app.listen(process.env.PORT || 5000, '0.0.0.0', () => {
+  const host = config?.HOST || '0.0.0.0'
+  const port = process.env.PORT || 5000
+
+  app.listen(port, host, () => {
     console.log(`Server running on port ${port}`);
   });
 };
