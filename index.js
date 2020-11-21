@@ -3,12 +3,23 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session)
 const cookieParser = require('cookie-parser');
 const database = require('./DB/database');
 const config = require('./config.json')
 
 const main = async () => {
   const app = express();
+
+  const storeOptions = {
+    host: process.env.DBHost || config.DBHost,
+    port: process.env.DBPort || config.DBPort,
+    user: process.env.DBUser || config.DBUser,
+    password: process.env.DBPassword || config.DBPassword,
+    database: process.env.DBName || config.DBName,
+  }
+
+  const sessionStore = new MySQLStore(storeOptions)
 
   // Configuration
   const corsOptions = {
@@ -17,7 +28,7 @@ const main = async () => {
   app.use(cors(corsOptions));
   app.use(cookieParser('bigbrain@83859019430090'));
   app.use(bodyParser.json());
-  app.use(session({ secret: 'bigbrain@83859019430090', cookie: {}, resave: false, saveUninitialized: false }));
+  app.use(session({ secret: 'bigbrain@83859019430090', store: sessionStore, cookie: {}, resave: false, saveUninitialized: false }));
   app.use(passport.initialize());
   app.use(passport.session());
 
