@@ -4,9 +4,9 @@ const moment = require('moment')
 
 const getUserActivities = async (userId, urlQuery, callback) => {
     let sqlQuery = `SELECT Activities.id, Activities.userId, Activities.distance, Activities.date, Activities.elapsedTime, Activities.comments, Activities.difficultyRating,
-                   Activities.title, Activities.type, Activities.distanceUnit, activityTypes.type
+                   Activities.title, Activities.type, Activities.distanceUnit, ActivityTypes.type
                    FROM Activities 
-		           INNER JOIN activityTypes ON Activities.type = activityTypes.id
+		           INNER JOIN ActivityTypes ON Activities.type = ActivityTypes.id
                    WHERE userId = ${userId}`
 
     sqlQuery += queryBuilder(urlQuery)
@@ -32,7 +32,7 @@ const getUserActivities = async (userId, urlQuery, callback) => {
 const getUserActivityById = async (userId, activityId, callback) => {
     const sqlQuery = `SELECT Activities.*, activityTypes.id 
                       FROM Activities 
-                      INNER JOIN activityTypes ON Activities.type = activityTypes.id 
+                      INNER JOIN ActivityTypes ON Activities.type = ActivityTypes.id 
                       WHERE Activities.id = ${activityId}
                       AND userId = ${userId}`
     try {
