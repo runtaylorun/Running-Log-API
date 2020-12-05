@@ -11,8 +11,7 @@ module.exports = (app) => {
             else {
                 req.login(user, err => {
                     if (err) throw err;
-                    console.log(user);
-                    res.status(200).send({ userId: user.userId });
+                    res.status(200).send({ userId: user.id });
                 });
             }
         })(req, res, next);

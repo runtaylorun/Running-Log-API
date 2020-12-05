@@ -30,11 +30,11 @@ const getUserActivities = async (userId, urlQuery, callback) => {
 }
 
 const getUserActivityById = async (userId, activityId, callback) => {
-    const sqlQuery = `SELECT Activities.*, activityTypes.id 
+    const sqlQuery = `SELECT Activities.*, ActivityTypes.id 
                       FROM Activities 
                       INNER JOIN ActivityTypes ON Activities.type = ActivityTypes.id 
                       WHERE Activities.id = ${activityId}
-                      AND userId = ${userId}`
+                      AND Activities.userId = ${userId}`
     try {
         await executeQuery(sqlQuery, (activities) => {
             const formattedActivities = activities.map(activity => (

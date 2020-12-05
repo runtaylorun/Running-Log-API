@@ -5,11 +5,11 @@ const connection = database.getConnection();
 
 module.exports = (passport) => {
     passport.serializeUser((user, done) => {
-        done(null, user.userId);
+        done(null, user.id);
     });
 
     passport.deserializeUser(async (id, done) => {
-        await connection.query(`SELECT * from users WHERE userId = ${id}`, (error, rows) => {
+        await connection.query(`SELECT * from Users WHERE id = ${id}`, (error, rows) => {
             done(error, rows[0]);
         });
     });
@@ -19,7 +19,7 @@ module.exports = (passport) => {
         passwordField: 'password',
         passReqToCallback: true
     }, async (req, email, password, done) => {
-        await connection.query(`SELECT * FROM users WHERE username = ${email}`, async (error, rows) => {
+        await connection.query(`SELECT * FROM Users WHERE username = ${email}`, async (error, rows) => {
             if (error) {
                 return done(error);
             }
@@ -31,7 +31,7 @@ module.exports = (passport) => {
                     email,
                     password
                 };
-                const insertQuery = `INSERT INTO users (username, password) VALUES (${email}, ${password})`;
+                const insertQuery = `INSERT INTO Users (username, password) VALUES (${email}, ${password})`;
                 await connection.query(insertQuery, (error, rows) => {
                     return done(null, newUser);
                 });
@@ -45,7 +45,7 @@ module.exports = (passport) => {
         passReqToCallback: true
     },
         async (req, email, password, done) => {
-            await connection.query(`SELECT * FROM users WHERE email = '${email}'`, (error, rows) => {
+            await connection.query(`SELECT * FROM Users WHERE email = '${email}'`, (error, rows) => {
                 if (error) {
                     return done(error);
                 }
