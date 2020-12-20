@@ -3,10 +3,9 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session)
-const cookieParser = require('cookie-parser');
+const MySQLStore = require('express-mysql-session')(session);
 const database = require('./DB/database');
-const config = require('./config.json')
+const config = require('./config.json');
 
 const main = async () => {
   const app = express();
@@ -17,18 +16,19 @@ const main = async () => {
     user: process.env.DBUser || config.DBUser,
     password: process.env.DBPassword || config.DBPassword,
     database: process.env.DBName || config.DBName,
-  }
+  };
 
-  const sessionStore = new MySQLStore(storeOptions)
+  const sessionStore = new MySQLStore(storeOptions);
 
-  // Configuration
+  // Cors Configuration
   const corsOptions = {
-    origin: ['http://localhost:3000', 'https://running-log-web.herokuapp.com/']
+    origin: ['http://localhost:3000', 'https://running-log-web.herokuapp.com/'],
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
   };
   app.use(cors(corsOptions));
-  app.use(cookieParser('bigbrain@83859019430090'));
+
   app.use(bodyParser.json());
-  app.use(session({ secret: 'bigbrain@83859019430090', store: sessionStore, cookie: {}, resave: false, saveUninitialized: false }));
+  app.use(session({ secret: 'saijfi22jf8ej2fijojg9j20j1893jdnfjsweoiun49n58safdioj', store: sessionStore, cookie: {}, resave: false, saveUninitialized: false }));
   app.use(passport.initialize());
   app.use(passport.session());
 
@@ -44,8 +44,8 @@ const main = async () => {
   require('./Routes/gear.js')(app);
 
 
-  const host = config?.HOST || '0.0.0.0'
-  const port = process.env.PORT || 5000
+  const host = config?.HOST || '0.0.0.0';
+  const port = process.env.PORT || 5000;
 
   app.listen(port, host, () => {
     console.log(`Server running on port ${port}`);
