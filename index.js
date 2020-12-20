@@ -5,7 +5,7 @@ const passport = require('passport');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const database = require('./DB/database');
-const config = require('./config.json');
+const config = require('config')
 
 const main = async () => {
   const app = express();
@@ -44,7 +44,7 @@ const main = async () => {
   require('./Routes/gear.js')(app);
 
 
-  const host = config?.HOST || '0.0.0.0';
+  const host = config.HOST || '0.0.0.0';
   const port = process.env.PORT || 5000;
 
   app.listen(port, host, () => {

@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const fs = require('fs')
-const config = require('../config.json')
+const config = require('config')
 
 let connection;
 
