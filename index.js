@@ -3,8 +3,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
+const flash = require('connect-flash')
 const MySQLStore = require('express-mysql-session')(session);
 const database = require('./DB/database');
+const mailer = require('./Services/mail')
 const config = require('config')
 
 const main = async () => {
@@ -23,20 +25,24 @@ const main = async () => {
   // Cors Configuration
   const corsOptions = {
     origin: ['http://localhost:3000', 'https://running-log-web.herokuapp.com/'],
-    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
+    methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true
   };
   app.use(cors(corsOptions));
-
   app.use(bodyParser.json());
-  app.use(session({ secret: 'saijfi22jf8ej2fijojg9j20j1893jdnfjsweoiun49n58safdioj', store: sessionStore, cookie: {}, resave: false, saveUninitialized: false }));
+  app.use(session({ secret: 'saijfi22jf8ej2fijojg9j20j1893jdnfjsweoiun49n58safdioj', cookie: { maxAge: 14400000 }, store: sessionStore, resave: false, saveUninitialized: false }));
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(flash())
 
   // Databases
   await database.connectToDatabase();
 
+  // Mail Service
+  mailer.createTransport()
+
   // auth
-  require('./Config/passport')(passport);
+  require('./Services/passport')(passport);
 
   // Routes
   require('./Routes/activities.js')(app);
