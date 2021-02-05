@@ -4,8 +4,15 @@ module.exports = (app) => {
   app.post('/activities', async (req, res) => {
     const { activity } = req.body;
 
+    const userId = req?.user?.id
+
+    const newActivity = {
+      ...activity,
+      userId
+    }
+
     try {
-      await createNewActivity(activity);
+      await createNewActivity(newActivity);
       res.status(201).send('Activity created');
     } catch (error) {
       console.log('Error creating new activity');
@@ -26,9 +33,8 @@ module.exports = (app) => {
 
   app.delete('/activities/:activityId', async (req, res) => { });
 
-  app.get('/activities/:userId', async (req, res) => {
-    const { userId } = req.params;
-    console.log(req.user);
+  app.get('/activities', async (req, res) => {
+    const userId = req?.user?.id;
 
     const query = {
       month: req.query.month || null,
@@ -46,8 +52,10 @@ module.exports = (app) => {
     }
   });
 
-  app.get('/activities/:userId/:activityId', async (req, res) => {
-    const { userId, activityId } = req.params;
+  app.get('/activities/:activityId', async (req, res) => {
+    const { activityId } = req.params;
+    const userId = req?.user?.id;
+
 
     try {
       await getUserActivityById(userId, activityId, (activities) => {

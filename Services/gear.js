@@ -1,9 +1,9 @@
 const { executeQuery, queryBuilder } = require('../DB/query');
 
 const getUserGear = async (userId, callback) => {
-    const sqlQuery = `SELECT Gear.* FROM Gear
-                      INNER JOIN users ON Gear.userId = users.userId
-                      WHERE Gear.userId = ${userId}`;
+    const sqlQuery = `SELECT gear.* FROM gear
+                      INNER JOIN users ON gear.userId = users.id
+                      WHERE gear.userId = ${userId}`;
 
     try {
         await executeQuery(sqlQuery, (gear) => {
@@ -15,7 +15,7 @@ const getUserGear = async (userId, callback) => {
 };
 
 const createNewGear = async (userId, gear) => {
-    const sqlQuery = `INSERT INTO Gear (userId, miles, brand, model, colorway, dateAdded, maxMiles) VALUES (${userId}, ${gear.miles}, '${gear.brand}', '${gear.model}', '${gear.colorway}, '${gear.dateAdded}', ${gear.maxMiles})`
+    const sqlQuery = `INSERT INTO gear (userId, miles, brand, model, colorway, dateAdded, maxMiles) VALUES (${userId}, ${gear.miles}, '${gear.brand}', '${gear.model}', '${gear.colorway}', '${gear.dateAdded}', ${gear.maxMiles})`
 
     try {
         executeQuery(sqlQuery)

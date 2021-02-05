@@ -1,9 +1,8 @@
-const database = require('../DB/database');
 const { getUserGear, createNewGear } = require('../Services/gear');
 
 module.exports = (app) => {
-    app.get('/gear/:userId', async (req, res) => {
-        const { userId } = req.params;
+    app.get('/gear', async (req, res) => {
+        const userId = req?.user?.id;
 
         try {
             await getUserGear(userId, (gear) => {
@@ -14,13 +13,13 @@ module.exports = (app) => {
         }
     });
 
-    app.post('/gear/:userId', async (req, res) => {
-        const { userId } = req.params;
+    app.post('/gear', async (req, res) => {
+        const userId = req?.user?.id;
+
         const { gear } = req.body
 
         try {
             await createNewGear(userId, gear)
-
             res.status(201).send('Activity Created')
         } catch (error) {
             console.log(error)
