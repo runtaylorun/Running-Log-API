@@ -4,12 +4,12 @@ module.exports = (app) => {
   app.post('/activities', async (req, res) => {
     const { activity } = req.body;
 
-    const userId = req?.user?.id
+    const userId = req?.user?.id;
 
     const newActivity = {
       ...activity,
       userId
-    }
+    };
 
     try {
       await createNewActivity(newActivity);
