@@ -10,7 +10,6 @@ const getUserActivities = async (userId, urlQuery, callback) => {
                    WHERE userId = ${userId}`;
 
     sqlQuery += queryBuilder(urlQuery);
-    console.log(sqlQuery);
 
 
     try {
@@ -18,7 +17,7 @@ const getUserActivities = async (userId, urlQuery, callback) => {
             const formattedActivities = activities.map(activity => (
                 {
                     ...activity,
-                    date: moment(activity.date).format('YYYY-MM-DD')
+                    date: moment(activity.date).format('MM-DD-YYYY')
                 }
             ));
 
@@ -41,7 +40,7 @@ const getUserActivityById = async (userId, activityId, callback) => {
             const formattedActivities = activities.map(activity => (
                 {
                     ...activity,
-                    date: moment(activity.date).format('YYYY-MM-DD')
+                    date: moment(activity.date).format('MM-DD-YYYY')
                 }
             ));
 
