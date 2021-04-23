@@ -1,4 +1,4 @@
-const { getUserActivities, getUserActivityById, createNewActivity, updateActivity } = require('../Services/activities');
+const { getUserActivities, getUserActivityById, createNewActivity, updateActivity, getUserActivityCount } = require('../Services/activities');
 
 module.exports = (app) => {
   app.post('/activities', async (req, res) => {
@@ -37,17 +37,25 @@ module.exports = (app) => {
     const userId = req?.user?.id ?? 0;
 
     const query = {
-      month: req.query.month || null,
-      year: req.query.year || null,
-      startDate: req.query.startDate || null,
-      endDate: req.query.endDate || null
+      month: req?.query?.month,
+      year: req?.query?.year,
+      startDate: req?.query?.startDate,
+      endDate: req?.query?.endDate,
+      limit: req?.query?.limit,
+      offset: req?.query?.offset,
+      searchTerm: req?.query?.searchTerm,
+      column: req?.query?.column,
+      sortDirection: req?.query?.sortDirection
     };
 
-
     try {
-      await getUserActivities(userId, query, (activities) => {
-        res.status(200).send(activities);
-      });
+
+      const activities = await getUserActivities(userId, query);
+      const count = await getUserActivityCount(userId)
+      const pages = req?.query?.limit ? Math.ceil(count / req.query.limit) : 0
+
+      res.status(200).send({ activities, count, pages });
+
     } catch (error) {
       res.status(400).send('Error getting activities');
     }
@@ -59,10 +67,10 @@ module.exports = (app) => {
 
 
     try {
-      await getUserActivityById(userId, activityId, (activities) => {
-        console.log(activities)
-        res.status(200).send(activities);
-      });
+      const activity = await getUserActivityById(userId, activityId);
+
+      res.status(200).send(activity);
+
     } catch (error) {
       res.status(400).send('Error getting activities');
     }

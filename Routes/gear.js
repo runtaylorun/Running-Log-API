@@ -5,9 +5,9 @@ module.exports = (app) => {
         const userId = req?.user?.id;
 
         try {
-            await getUserGear(userId, (gear) => {
-                res.status(200).send(gear);
-            });
+            const gear = await getUserGear(userId);
+
+            res.status(200).send(gear);
         } catch (error) {
             console.log('Error getting user gear', error);
         }

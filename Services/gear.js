@@ -1,14 +1,14 @@
 const { executeQuery, queryBuilder } = require('../DB/query');
 
-const getUserGear = async (userId, callback) => {
+const getUserGear = async (userId) => {
     const sqlQuery = `SELECT gear.* FROM gear
                       INNER JOIN users ON gear.userId = users.id
                       WHERE gear.userId = ${userId}`;
 
     try {
-        await executeQuery(sqlQuery, (gear) => {
-            callback(gear);
-        });
+        const gear = await executeQuery(sqlQuery)
+
+        return gear
     } catch (error) {
         console.log('Error getting user gear', error);
     }

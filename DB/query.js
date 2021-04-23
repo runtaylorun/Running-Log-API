@@ -1,15 +1,14 @@
 const database = require('./database')
 const connection = database.getConnection()
+const util = require('util')
 
-const executeQuery = async (sqlQuery, callback) => {
+const query = util.promisify(connection.query).bind(connection)
+
+const executeQuery = async (sqlQuery) => {
     try {
-        await connection.query(sqlQuery, (error, results) => {
-            if (error) throw error
+        const results = await query(sqlQuery)
 
-            if (callback) {
-                callback(results)
-            }
-        })
+        return results
     } catch (error) {
         console.log('Error executing query', error)
     }
@@ -28,6 +27,20 @@ const queryBuilder = (urlQuery) => {
 
     if (urlQuery.startDate && urlQuery.endDate) {
         additionalQueries += ` AND date BETWEEN \'${urlQuery.startDate}\' AND \'${urlQuery.endDate}\'`
+    }
+
+    if (urlQuery.searchTerm) {
+        additionalQueries += ` AND title LIKE \'${urlQuery.searchTerm}%\'`
+    }
+
+    additionalQueries += ` ORDER BY activities.${urlQuery.column} ${urlQuery.sortDirection}`
+
+    if (urlQuery?.limit) {
+        additionalQueries += ` LIMIT ${urlQuery.limit}`
+    }
+
+    if (urlQuery?.offset) {
+        additionalQueries += ` OFFSET ${urlQuery.offset}`
     }
 
     return additionalQueries

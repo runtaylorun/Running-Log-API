@@ -2,7 +2,7 @@ const { executeQuery, queryBuilder } = require('../DB/query');
 const moment = require('moment');
 
 
-const getUserActivities = async (userId, urlQuery, callback) => {
+const getUserActivities = async (userId, urlQuery) => {
     let sqlQuery = `SELECT activities.id, activities.userId, activities.distance, activities.date, activities.elapsedTime, activities.comments, activities.difficultyRating,
                    activities.title, activities.type, activities.distanceUnit, activity_types.type
                    FROM activities 
@@ -13,39 +13,52 @@ const getUserActivities = async (userId, urlQuery, callback) => {
 
 
     try {
-        await executeQuery(sqlQuery, (activities) => {
-            const formattedActivities = activities.map(activity => (
-                {
-                    ...activity,
-                    date: moment(activity.date).format('MM-DD-YYYY')
-                }
-            ));
+        const rows = await executeQuery(sqlQuery)
 
-            callback(formattedActivities);
-        });
+        const formattedActivities = rows?.map(activity => (
+            {
+                ...activity,
+                date: moment(activity.date).format('MM-DD-YYYY')
+            }
+        ))
+
+        return formattedActivities
     } catch (error) {
         console.log('Error getting user activities', error);
     }
 
 };
 
-const getUserActivityById = async (userId, activityId, callback) => {
+const getUserActivityCount = async (userId) => {
+    let sqlQuery = `SELECT COUNT(*) FROM activities WHERE userId = ${userId}`
+
+    try {
+        const rows = await executeQuery(sqlQuery)
+
+        return rows[0]['COUNT(*)']
+    } catch (error) {
+        console.log('Error fetching row count', error)
+    }
+}
+
+const getUserActivityById = async (userId, activityId) => {
     const sqlQuery = `SELECT activities.*, activity_types.id 
                       FROM activities 
                       INNER JOIN activity_types ON activities.type = activity_types.id 
                       WHERE activities.id = ${activityId}
                       AND activities.userId = ${userId}`;
     try {
-        await executeQuery(sqlQuery, (activities) => {
-            const formattedActivities = activities.map(activity => (
-                {
-                    ...activity,
-                    date: moment(activity.date).format('MM-DD-YYYY')
-                }
-            ));
+        const rows = await executeQuery(sqlQuery)
 
-            callback(formattedActivities);
-        });
+        const formattedActivities = rows?.map(activity => (
+            {
+                ...activity,
+                date: moment(activity.date).format('MM-DD-YYYY')
+            }
+        ))
+
+        return formattedActivities
+
     } catch (error) {
         console.log(error);
     }
@@ -61,7 +74,7 @@ const createNewActivity = async (activity) => {
     VALUES ('${title}', '${type}', '${distanceUnit}', '${distance}', '${date}', '${elapsedTime}', '${comments}', '${difficultyRating}', '${userId}')`;
 
     try {
-        await executeQuery(sqlQuery, (results) => console.log(results));
+        await executeQuery(sqlQuery);
     } catch (error) {
         console.log('Error inserting activity', error);
     }
@@ -76,7 +89,7 @@ const updateActivity = async (activity) => {
                     WHERE id = ${activityId}`;
 
     try {
-        await executeQuery(sqlQuery, (results) => console.log(results));
+        await executeQuery(sqlQuery);
     } catch (error) {
         console.log('Error inserting activity', error);
     }
@@ -87,5 +100,6 @@ module.exports = {
     getUserActivities,
     getUserActivityById,
     createNewActivity,
-    updateActivity
+    updateActivity,
+    getUserActivityCount
 };
