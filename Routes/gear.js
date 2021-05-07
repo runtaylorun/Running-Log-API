@@ -1,28 +1,71 @@
-const { getUserGear, createNewGear } = require('../Services/gear');
+const { getUserGear, getGearById, updateGear, createNewGear, deleteGear, updateRunsWithDeletedGear } = require('../Services/gear')
 
 module.exports = (app) => {
-    app.get('/gear', async (req, res) => {
-        const userId = req?.user?.id;
+  app.get('/gear', async (req, res) => {
+    const userId = req?.user?.id
 
-        try {
-            const gear = await getUserGear(userId);
+    try {
+      const gear = await getUserGear(userId)
 
-            res.status(200).send(gear);
-        } catch (error) {
-            console.log('Error getting user gear', error);
-        }
-    });
+      res.status(200).send(gear)
+    } catch (error) {
+      res.status(500).send({ message: 'Error getting gear' })
+      console.log(error)
+    }
+  })
 
-    app.post('/gear', async (req, res) => {
-        const userId = req?.user?.id;
+  app.post('/gear', async (req, res) => {
+    const userId = req?.user?.id
+    const { gear } = req.body
 
-        const { gear } = req.body
+    try {
+      await createNewGear(userId, gear)
+      res.status(201).send({ message: 'gear created' })
+    } catch (error) {
+      res.status(500).send({ message: 'Error creating gear' })
+      console.log(error)
+    }
+  })
 
-        try {
-            await createNewGear(userId, gear)
-            res.status(201).send('Activity Created')
-        } catch (error) {
-            console.log(error)
-        }
-    })
-};
+  app.get('/gear/:gearId', async (req, res) => {
+    const userId = req?.user?.id ?? 0
+    const gearId = req?.params?.gearId
+
+    try {
+      const gear = await getGearById(userId, gearId)
+
+      res.status(200).send(gear)
+    } catch (error) {
+      res.status(500).send({ message: 'Error getting gear' })
+      console.log(error)
+    };
+  })
+
+  app.put('/gear', async (req, res) => {
+    const userId = req?.user?.id
+    const { gear } = req.body
+
+    try {
+      await updateGear(userId, gear)
+
+      res.status(200).send({ message: 'gear updated' })
+    } catch (error) {
+      res.status(500).send({ message: 'Error updating gear' })
+      console.log(error)
+    }
+  })
+
+  app.delete('/gear/:gearId', async (req, res) => {
+    const userId = req?.user?.id
+    const gearId = req?.params?.gearId
+
+    try {
+      await deleteGear(userId, gearId)
+      await updateRunsWithDeletedGear(userId, gearId)
+      res.status(200).send({ message: 'activity deleted' })
+    } catch (error) {
+      res.status(500).send({ message: 'Error deleting gear' })
+      console.log(error)
+    }
+  })
+}

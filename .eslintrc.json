@@ -4,58 +4,8 @@
         "es2020": true,
         "node": true
     },
-    "extends": [
-        "standard"
-    ],
+    "extends": "standard",
     "parserOptions": {
         "ecmaVersion": 11
-    },
-    "rules": {
-        "no-tabs": 0,
-        "require-await": 1,
-        "curly": 1,
-        "default-case": 1,
-        "default-case-last": 1,
-        "eqeqeq": 1,
-        "no-multi-spaces": 1,
-        "camelcase": [
-            "error",
-            "always"
-        ],
-        "comma-dangle": [
-            "error",
-            "always"
-        ],
-        "semi": 1,
-        "indent": [
-            "error",
-            "tab"
-        ],
-        "no-console": "warn",
-        "no-var": "error",
-        "prefer-const": "error",
-        "no-const-assign": "error",
-        "spaced-comment": "error",
-        "space-in-parens": "error",
-        "space-before-blocks": "error",
-        "sort-vars": "error",
-        "sort-keys": "error",
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "key-spacing": "error",
-        "array-bracket-spacing": [
-            "error",
-            "always"
-        ],
-        "block-spacing": [
-            "error",
-            "always"
-        ],
-        "brace-style": [
-            "error",
-            "1tbs"
-        ]
     }
 }
