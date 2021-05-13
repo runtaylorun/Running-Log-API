@@ -1,10 +1,13 @@
+const formidable = require('formidable')
 const {
   getUserActivities,
   getUserActivityById,
   createNewActivity,
   updateActivity,
+  checkIfActivityExists,
   getUserActivityCount
 } = require('../Services/activities')
+const { getActivityFromTcx, getActivityFromGpx, getActivityFromFit } = require('../Services/activityFiles')
 
 module.exports = (app) => {
   app.post('/activities', async (req, res) => {
@@ -23,6 +26,45 @@ module.exports = (app) => {
       res.status(500).send({ message: 'Error creating new activity' })
       console.log(error)
     }
+  })
+
+  app.post('/activities/fileUpload', async (req, res) => {
+    const form = new formidable.IncomingForm()
+    const userId = req?.user?.id ?? 0
+
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return res.status(500).send({ message: 'Error uploading file' })
+      }
+
+      const { file } = files
+      let activity
+
+      if (file.name.includes('.tcx')) {
+        activity = await getActivityFromTcx(file)
+      }
+
+      if (file.name.includes('.gpx')) {
+        activity = await getActivityFromGpx(file)
+      }
+
+      if (file.name.includes('.fit')) {
+        activity = await getActivityFromFit(file)
+      }
+
+      try {
+        const activityExists = await checkIfActivityExists(activity.fileId)
+        if (activityExists.length) {
+          return res.status(500).send({ message: 'Activity already exists' })
+        }
+
+        await createNewActivity({ ...activity, userId })
+        res.status(200).send({ message: 'Activity uploaded' })
+      } catch (error) {
+        res.status(500).send({ message: 'Error uploading file' })
+        console.log(error)
+      }
+    })
   })
 
   app.put('/activities/:activityId', async (req, res) => {

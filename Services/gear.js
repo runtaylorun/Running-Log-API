@@ -1,9 +1,11 @@
-const { executeQuery, queryBuilder } = require('../DB/query')
+const { executeQuery, gearQueryBuilder } = require('../DB/query')
 
-const getUserGear = async (userId) => {
-  const sqlQuery = `SELECT gear.* FROM gear
+const getUserGear = async (userId, query) => {
+  let sqlQuery = `SELECT gear.* FROM gear
                       INNER JOIN users ON gear.userId = users.id
                       WHERE gear.userId = ${userId}`
+
+  sqlQuery += gearQueryBuilder(sqlQuery)
 
   try {
     const gear = await executeQuery(sqlQuery)
@@ -48,6 +50,16 @@ const updateGear = async (userId, gear) => {
   }
 }
 
+const patchGear = async (gearId, changes) => {
+  const sqlQuery = `UPDATE gear SET ${changes?.dateRetired || changes.dateRetired === '' ? changes.dateRetired === '' ? 'dateRetired = NULL' : `dateRetired = '${changes.dateRetired}'` : ''} WHERE id = ${gearId}`
+
+  try {
+    await executeQuery(sqlQuery)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const deleteGear = async (userId, gearId) => {
   const sqlQuery = `DELETE FROM gear WHERE userId = ${userId} AND id = ${gearId}`
 
@@ -74,5 +86,6 @@ module.exports = {
   createNewGear,
   deleteGear,
   updateGear,
+  patchGear,
   updateRunsWithDeletedGear
 }

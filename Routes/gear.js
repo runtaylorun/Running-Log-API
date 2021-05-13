@@ -1,11 +1,15 @@
-const { getUserGear, getGearById, updateGear, createNewGear, deleteGear, updateRunsWithDeletedGear } = require('../Services/gear')
+const { getUserGear, getGearById, patchGear, updateGear, createNewGear, deleteGear, updateRunsWithDeletedGear } = require('../Services/gear')
 
 module.exports = (app) => {
   app.get('/gear', async (req, res) => {
     const userId = req?.user?.id
 
+    const query = {
+      ...req.query
+    }
+
     try {
-      const gear = await getUserGear(userId)
+      const gear = await getUserGear(userId, query)
 
       res.status(200).send(gear)
     } catch (error) {
@@ -17,6 +21,8 @@ module.exports = (app) => {
   app.post('/gear', async (req, res) => {
     const userId = req?.user?.id
     const { gear } = req.body
+
+    console.log(gear)
 
     try {
       await createNewGear(userId, gear)
@@ -49,6 +55,20 @@ module.exports = (app) => {
       await updateGear(userId, gear)
 
       res.status(200).send({ message: 'gear updated' })
+    } catch (error) {
+      res.status(500).send({ message: 'Error updating gear' })
+      console.log(error)
+    }
+  })
+
+  app.patch('/gear/:gearId', async (req, res) => {
+    const gearId = req?.params?.gearId
+    const { changes } = req.body
+
+    try {
+      await patchGear(gearId, changes)
+
+      res.status(200).send({ message: 'Gear updated' })
     } catch (error) {
       res.status(500).send({ message: 'Error updating gear' })
       console.log(error)

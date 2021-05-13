@@ -1,14 +1,14 @@
-const { executeQuery, queryBuilder } = require('../DB/query')
+const { executeQuery, activityQueryBuilder } = require('../DB/query')
 const moment = require('moment')
 
 const getUserActivities = async (userId, urlQuery) => {
   let sqlQuery = `SELECT activities.id, activities.userId, activities.distance, activities.date, activities.hours, activities.minutes, activities.seconds, activities.comments, activities.difficultyRating,
                    activities.title, activities.type, activities.distanceUnit, activity_types.type
                    FROM activities 
-		           INNER JOIN activity_types ON activities.type = activity_types.id
+                   INNER JOIN activity_types ON activities.type = activity_types.id
                    WHERE userId = ${userId}`
 
-  sqlQuery += queryBuilder(urlQuery)
+  sqlQuery += activityQueryBuilder(urlQuery)
 
   try {
     const rows = await executeQuery(sqlQuery)
@@ -60,13 +60,41 @@ const getUserActivityById = async (userId, activityId) => {
   }
 }
 
+const checkIfActivityExists = async (fileId) => {
+  const sqlQuery = `SELECT id FROM activities WHERE fileId = '${fileId}'`
+
+  try {
+    const result = await executeQuery(sqlQuery)
+
+    return result
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const createNewActivity = async (activity) => {
-  const { title, type, distanceUnit, distance, date, hours, minutes, seconds, comments, difficultyRating, userId } = activity
+  const {
+    title,
+    type,
+    distanceUnit,
+    distance,
+    date,
+    hours,
+    minutes,
+    seconds,
+    comments,
+    difficultyRating,
+    userId,
+    fileId
+  } = activity
+
+  console.log(distance)
 
   const sqlQuery = ` INSERT INTO activities 
-    (title, type, distanceUnit, distance, date, hours, minutes, seconds, comments, difficultyRating, userId) 
-    VALUES ('${title}', '${type}', '${distanceUnit}', '${distance}', '${date}', '${hours}', '${minutes}', '${seconds}', '${comments}', '${difficultyRating}', '${userId}')`
+    (title, type, distanceUnit, distance, date, hours, minutes, seconds, comments, difficultyRating, userId, fileId) 
+    VALUES ('${title}', '${type}', '${distanceUnit}', ${distance}, '${date}', '${hours}', '${minutes}', '${seconds}', '${comments}', '${difficultyRating}', '${userId}', '${fileId}')`
 
+  console.log(sqlQuery)
   try {
     await executeQuery(sqlQuery)
   } catch (error) {
@@ -93,5 +121,6 @@ module.exports = {
   getUserActivityById,
   createNewActivity,
   updateActivity,
+  checkIfActivityExists,
   getUserActivityCount
 }

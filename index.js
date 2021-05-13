@@ -1,9 +1,9 @@
 const express = require('express')
 const cors = require('cors')
-const bodyParser = require('body-parser')
 const passport = require('passport')
 const session = require('express-session')
 const flash = require('connect-flash')
+const bodyParser = require('body-parser')
 const MySQLStore = require('express-mysql-session')(session)
 const database = require('./DB/database')
 const mailer = require('./Services/mail')
@@ -28,8 +28,9 @@ const main = async () => {
     methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
   }
+
+  app.use(express.json())
   app.use(cors(corsOptions))
-  app.use(bodyParser.json())
   app.use(session({ secret: 'saijfi22jf8ej2fijojg9j20j1893jdnfjsweoiun49n58safdioj', cookie: { maxAge: 14400000 }, store: sessionStore, resave: false, saveUninitialized: false }))
   app.use(passport.initialize())
   app.use(passport.session())

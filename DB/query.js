@@ -14,7 +14,7 @@ const executeQuery = async (sqlQuery) => {
   }
 }
 
-const queryBuilder = (urlQuery) => {
+const activityQueryBuilder = (urlQuery) => {
   let additionalQueries = ''
 
   if (urlQuery.month) {
@@ -54,7 +54,26 @@ const queryBuilder = (urlQuery) => {
   return additionalQueries
 }
 
+const gearQueryBuilder = (urlQuery) => {
+  let additionalQueries = ''
+
+  if (urlQuery.startDate && urlQuery.endDate) {
+    additionalQueries += ` AND date BETWEEN \'${urlQuery.startDate}\' AND \'${urlQuery.endDate}\'`
+  }
+
+  if (!urlQuery.startDate && urlQuery.endDate) {
+    additionalQueries += ` AND date < \'${urlQuery.endDate}\'`
+  }
+
+  if (urlQuery?.limit) {
+    additionalQueries += ` LIMIT ${urlQuery.limit}`
+  }
+
+  return additionalQueries
+}
+
 module.exports = {
   executeQuery,
-  queryBuilder
+  activityQueryBuilder,
+  gearQueryBuilder
 }
