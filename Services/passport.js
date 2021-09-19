@@ -84,16 +84,16 @@ module.exports = (passport) => {
       bcrypt.hash(password, SALT_ROUNDS, async (err, hash) => {
         if (err) return done(err)
 
-        if (!(rows[0].password === hash)) {
+        if (rows[0].password !== hash) {
           return done(null, false, { message: 'Username or password is incorrect' })
         }
+
+        if (rows[0].confirmed === NOT_CONFIRMED) {
+          return done(null, false, { message: 'Please verify your email' })
+        }
+
+        return done(null, rows[0])
       })
-
-      if (rows[0].confirmed === NOT_CONFIRMED) {
-        return done(null, false, { message: 'Please verify your email' })
-      }
-
-      return done(null, rows[0])
     })
   }))
 }
