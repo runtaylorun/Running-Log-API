@@ -81,10 +81,10 @@ module.exports = (passport) => {
         return done(null, false, { message: 'Username or password is incorrect' })
       }
 
-      bcrypt.hash(password, SALT_ROUNDS, async (err, hash) => {
+      bcrypt.compare(password, rows[0].password, async (err, result) => {
         if (err) return done(err)
 
-        if (rows[0].password !== hash) {
+        if (!result) {
           return done(null, false, { message: 'Username or password is incorrect' })
         }
 
